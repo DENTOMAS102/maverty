@@ -28,7 +28,7 @@ import net.minecraftforge.network.NetworkHooks;
 
 /** An eye torn from the halo: hangs for a moment, then hunts its target. Can be struck down. */
 public class WatchingEye extends Projectile {
-    private static final int HOVER_TICKS = 9;
+    private static final int HOVER_TICKS = 14;
     private static final int HOMING_TICKS = 70;
     private static final int MAX_LIFE = 130;
     private static final DustParticleOptions TRAIL = new DustParticleOptions(new Vector3f(0.55F, 0.04F, 0.1F), 0.9F);
@@ -118,9 +118,10 @@ public class WatchingEye extends Projectile {
         if (this.level.isClientSide) {
             return;
         }
-        Entity victim = result.getEntity();
-        if (victim.hurt(DamageSource.indirectMagic(this, this.getOwner()), 7.0F) && victim instanceof LivingEntity living) {
-            living.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1), this.getEffectSource());
+        LivingEntity owner = this.getOwner() instanceof LivingEntity living ? living : null;
+        if (result.getEntity() instanceof LivingEntity victim && DeathMagic.strike(owner, this, victim, 7.0F)
+                && victim.isAlive()) {
+            victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1), this.getEffectSource());
         }
         this.burst();
     }
@@ -137,6 +138,7 @@ public class WatchingEye extends Projectile {
         if (this.level instanceof ServerLevel server) {
             server.sendParticles(TRAIL, this.getX(), this.getY() + 0.2D, this.getZ(), 14, 0.2D, 0.2D, 0.2D, 0.02D);
             server.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.2D, this.getZ(), 8, 0.15D, 0.15D, 0.15D, 0.02D);
+            DeathMagic.blightDisc(server, this.getOwner(), DeathMagic.ground(server, this.position()), 1.6D);
         }
         this.playSound(ModSounds.EYE_HIT.get(), 0.9F, 0.85F + this.random.nextFloat() * 0.3F);
         this.discard();

@@ -1,6 +1,12 @@
 {
   "entity.deathgoddess.goddess_of_death": "Goddess of Death",
   "entity.deathgoddess.watching_eye": "Watching Eye",
+  "entity.deathgoddess.death_sigil": "Death Sigil",
+  "entity.deathgoddess.death_crescent": "Death Crescent",
+  "entity.deathgoddess.death_orb": "Death Orb",
+  "entity.deathgoddess.soul_lance": "Soul Lance",
+  "death.attack.deathgoddess.death_magic": "%1$s was unmade by %2$s",
+  "death.attack.deathgoddess.death_magic.item": "%1$s was unmade by %2$s using %3$s",
   "item.deathgoddess.goddess_of_death_spawn_egg": "Goddess of Death Spawn Egg",
   "item.deathgoddess.mourning_effigy": "Mourning Effigy",
   "item.deathgoddess.mourning_effigy.tooltip": "Set it down, and she will come.",
@@ -19,5 +25,18 @@
   "subtitles.deathgoddess.goddess_of_death.gaze_release": "The halo sees you",
   "subtitles.deathgoddess.goddess_of_death.strings": "Threads pull taut",
   "subtitles.deathgoddess.goddess_of_death.veil_step": "Goddess of Death vanishes",
-  "subtitles.deathgoddess.goddess_of_death.phase": "Goddess of Death shrieks"
+  "subtitles.deathgoddess.goddess_of_death.phase": "Goddess of Death shrieks",
+  "subtitles.deathgoddess.goddess_of_death.cast_sigil": "Goddess of Death intones",
+  "subtitles.deathgoddess.goddess_of_death.cast_blade": "A blade is drawn",
+  "subtitles.deathgoddess.goddess_of_death.sigil_erupt": "A sigil erupts",
+  "subtitles.deathgoddess.goddess_of_death.blade_wave": "The air is cut",
+  "subtitles.deathgoddess.goddess_of_death.knell": "A knell tolls",
+  "subtitles.deathgoddess.goddess_of_death.rain_fall": "Black rain falls",
+  "subtitles.deathgoddess.goddess_of_death.lance_form": "A lance takes shape",
+  "subtitles.deathgoddess.goddess_of_death.lance_fire": "A lance flies",
+  "subtitles.deathgoddess.goddess_of_death.danse": "A music box plays",
+  "subtitles.deathgoddess.goddess_of_death.requiem_charge": "A requiem swells",
+  "subtitles.deathgoddess.goddess_of_death.requiem_release": "The requiem ends",
+  "subtitles.deathgoddess.goddess_of_death.reap": "A life is taken",
+  "subtitles.deathgoddess.goddess_of_death.wither": "Leaves wither"
 }

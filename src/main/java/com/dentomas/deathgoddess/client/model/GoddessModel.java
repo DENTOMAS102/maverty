@@ -1,8 +1,10 @@
 package com.dentomas.deathgoddess.client.model;
 
+import com.dentomas.deathgoddess.entity.GoddessAction;
 import com.dentomas.deathgoddess.entity.GoddessOfDeath;
 import java.util.ArrayList;
 import java.util.List;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
@@ -112,18 +114,18 @@ public class GoddessModel extends HierarchicalModel<GoddessOfDeath> {
                 ? Mth.clamp((entity.dyingTicks + this.partialTick) / GoddessOfDeath.DEATH_TICKS, 0.0F, 1.0F) : 0.0F;
         // Fades all living motion out during the first fifth of the death animation.
         float life = 1.0F - Mth.clamp(dying * 5.0F, 0.0F, 1.0F);
-        int action = entity.getAction();
-        boolean gazing = action == GoddessOfDeath.GAZE;
+        GoddessAction action = entity.getAction();
+        // The halo stares, unblinking, for the two spells it powers.
+        boolean gazing = action == GoddessAction.GAZE || action == GoddessAction.REQUIEM;
         boolean enraged = entity.isEnraged();
 
         this.animate(entity.idleAnim, GoddessAnimations.IDLE, age);
-        this.animate(entity.spawnAnim, GoddessAnimations.SPAWN, age);
-        this.animate(entity.sweepAnim, GoddessAnimations.SWEEP, age);
-        this.animate(entity.eyesAnim, GoddessAnimations.EYES, age);
-        this.animate(entity.gazeAnim, GoddessAnimations.GAZE, age);
-        this.animate(entity.stringsAnim, GoddessAnimations.STRINGS, age);
-        this.animate(entity.veilStepAnim, GoddessAnimations.VEIL_STEP, age);
-        this.animate(entity.phaseAnim, GoddessAnimations.PHASE, age);
+        for (GoddessAction each : GoddessAction.VALUES) {
+            AnimationDefinition definition = GoddessAnimations.forAction(each);
+            if (definition != null) {
+                this.animate(entity.actionAnims[each.ordinal()], definition, age);
+            }
+        }
         this.animate(entity.deathAnim, GoddessAnimations.DEATH, age);
 
         this.head.yRot += headYaw * DEG * life;

@@ -94,5 +94,108 @@
         "attenuation_distance": 48
       }
     ]
+  },
+  "entity.goddess_of_death.cast_sigil": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.cast_sigil",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/cast_sigil",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.cast_blade": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.cast_blade",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/cast_blade",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.sigil_erupt": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.sigil_erupt",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/sigil_erupt1",
+        "attenuation_distance": 48
+      },
+      {
+        "name": "deathgoddess:goddess/sigil_erupt2",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.blade_wave": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.blade_wave",
+    "sounds": [
+      "deathgoddess:goddess/blade_wave"
+    ]
+  },
+  "entity.goddess_of_death.knell": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.knell",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/knell",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.rain_fall": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.rain_fall",
+    "sounds": [
+      "deathgoddess:goddess/rain_fall"
+    ]
+  },
+  "entity.goddess_of_death.lance_form": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.lance_form",
+    "sounds": [
+      "deathgoddess:goddess/lance_form"
+    ]
+  },
+  "entity.goddess_of_death.lance_fire": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.lance_fire",
+    "sounds": [
+      "deathgoddess:goddess/lance_fire"
+    ]
+  },
+  "entity.goddess_of_death.danse": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.danse",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/danse",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.requiem_charge": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.requiem_charge",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/requiem_charge",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.requiem_release": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.requiem_release",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/requiem_release",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.reap": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.reap",
+    "sounds": [
+      "deathgoddess:goddess/reap"
+    ]
+  },
+  "entity.goddess_of_death.wither": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.wither",
+    "sounds": [
+      "deathgoddess:goddess/wither"
+    ]
   }
 }
