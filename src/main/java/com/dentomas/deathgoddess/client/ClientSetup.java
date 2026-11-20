@@ -2,6 +2,8 @@ package com.dentomas.deathgoddess.client;
 
 import com.dentomas.deathgoddess.DeathGoddessMod;
 import com.dentomas.deathgoddess.client.model.GoddessModelLayer;
+import com.dentomas.deathgoddess.client.render.DeathBoltRenderer;
+import com.dentomas.deathgoddess.client.render.DeathSigilRenderer;
 import com.dentomas.deathgoddess.client.render.GoddessRenderer;
 import com.dentomas.deathgoddess.client.render.WatchingEyeRenderer;
 import com.dentomas.deathgoddess.registry.ModEntities;
@@ -25,6 +27,10 @@ public final class ClientSetup {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.GODDESS.get(), GoddessRenderer::new);
         event.registerEntityRenderer(ModEntities.WATCHING_EYE.get(), WatchingEyeRenderer::new);
+        event.registerEntityRenderer(ModEntities.DEATH_SIGIL.get(), DeathSigilRenderer::new);
+        event.registerEntityRenderer(ModEntities.DEATH_CRESCENT.get(), DeathBoltRenderer::new);
+        event.registerEntityRenderer(ModEntities.DEATH_ORB.get(), DeathBoltRenderer::new);
+        event.registerEntityRenderer(ModEntities.SOUL_LANCE.get(), DeathBoltRenderer::new);
     }
 
     private ClientSetup() {

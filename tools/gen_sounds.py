@@ -243,7 +243,7 @@ def eye_hit():
 
 def gaze_charge():
     rng = np.random.default_rng(80)
-    d = 2.8                                                  # the gaze lands on tick 56
+    d = 2.0                                                  # the gaze lands on tick 40
     n = int(SR * d)
     t = tt(d)
     grow = np.linspace(0, 1, n)
@@ -269,12 +269,12 @@ def gaze_release():
 
 def strings():
     rng = np.random.default_rng(100)
-    d = 0.95
-    creak_t = tt(0.45)
-    creak = saw(phase_of(np.interp(creak_t, [0, 0.45], [70, 190]))) * (np.sin(TAU * 31 * creak_t) > 0.2)
+    d = 1.3
+    creak_t = tt(0.75)
+    creak = saw(phase_of(np.interp(creak_t, [0, 0.75], [70, 190]))) * (np.sin(TAU * 31 * creak_t) > 0.2)
     creak = bp(creak, 500, 2500) * np.linspace(0.1, 1, len(creak_t)) * 0.5
-    # Server yanks the target 10 ticks after this starts.
-    twang = mix(d, *[(0.48 + i * 0.035, fade(pluck(f, 0.45, rng, 0.992), 0, 0.1) * 0.6)
+    # Server yanks the target 16 ticks after this starts.
+    twang = mix(d, *[(0.78 + i * 0.035, fade(pluck(f, 0.45, rng, 0.992), 0, 0.1) * 0.6)
                      for i, f in enumerate((660, 990, 1320, 1485))])
     return reverb(fade(mix(d, (0, creak)) + twang), rng, 0.9, 0.3)
 
@@ -309,11 +309,185 @@ def phase():
                   rng, 2.4, 0.5)
 
 
+# ------------------------------------------------------------------ death magic
+def choir(freq, d, rng, vowels=((650, 1.0), (1080, 0.7), (2450, 0.35))):
+    """A breathy, detuned cluster of voices; freq may be a number or a per-sample glide."""
+    t = tt(d)
+    out = np.zeros_like(t)
+    for detune in (0.994, 1.0, 1.007, 0.5, 1.498):
+        vibrato = 1 + 0.006 * np.sin(TAU * rng.uniform(4, 6) * t + rng.uniform(0, TAU))
+        out += saw(phase_of(freq * detune * vibrato))
+    return formant(out, vowels, 0.14) + 0.15 * bp(noise(d, rng), 1500, 5000)
+
+
+def cast_sigil():
+    rng = np.random.default_rng(130)
+    d = 1.5
+    n = int(SR * d)
+    t = tt(d)
+    glide = np.interp(t, [0, d], [0.94, 1.0])
+    voice = choir(146.8 * glide, d, rng) + 0.7 * choir(207.7 * glide, d, rng)     # a tritone, rising
+    rumble = np.sin(phase_of(np.interp(t, [0, d], [40, 62])))
+    body = (voice * 0.3 + rumble * 0.5 + whisper(d, rng, 1800) * 0.4) * swell(n, 0.75, 1.6)
+    return reverb(fade(body, 0.05, 0.3), rng, 1.6, 0.45)
+
+
+def cast_blade():
+    rng = np.random.default_rng(140)
+    d = 1.2
+    n = int(SR * d)
+    t = tt(d)
+    grow = np.linspace(0.1, 1, n)
+    scrape = bp(noise(d, rng), 2500, 9000) * (0.5 + 0.5 * np.sin(phase_of(np.interp(t, [0, d], [30, 160])))) * grow ** 2
+    ring = sum(np.sin(phase_of(np.interp(t, [0, d], [f * 0.8, f]))) for f in (1870, 2790, 4130)) * grow ** 3 * 0.2
+    shing = mix(d, (0.95, bell(3300, 0.25, rng, decay=14, partials=((1, 1), (1.47, 0.6), (2.09, 0.4))) * 0.6))
+    low = np.sin(phase_of(np.interp(t, [0, d], [90, 140]))) * swell(n, 0.8) * 0.3
+    return reverb(fade(scrape * 0.6 + ring + shing + low, 0.02, 0.1), rng, 1.0, 0.3)
+
+
+def sigil_erupt(seed):
+    rng = np.random.default_rng(150 + seed)
+    d = 1.0
+    t = tt(d)
+    boom = np.sin(phase_of(np.interp(t, [0, 0.3, d], [95 - seed * 8, 48, 36]))) * np.exp(-t * 4.5) * 1.3
+    rush = bp(noise(d, rng), 250, 3800) * np.exp(-t * 5) * np.interp(t, [0, 0.04, d], [0, 1, 1])
+    crack = hp(noise(0.05, rng), 1800) * np.exp(-tt(0.05) * 70)
+    wail = choir(np.interp(t, [0, d], [420 + 40 * seed, 250]), d, rng) * np.exp(-t * 5) * 0.25
+    return reverb(fade(mix(d, (0, boom), (0, rush * 0.8), (0, crack * 0.7), (0, wail)), 0.001, 0.2), rng, 1.4, 0.4)
+
+
+def blade_wave():
+    rng = np.random.default_rng(160)
+    d = 0.7
+    n = int(SR * d)
+    t = tt(d)
+    x = noise(d, rng)
+    slash = (bp(x, 800, 2500) + bp(x, 2500, 9000) * swell(n, 0.15, 3) * 1.4) * swell(n, 0.18, 2.5)
+    ring = bell(2450, d, rng, decay=9, partials=((1, 1), (1.5, 0.5), (2.63, 0.35))) * 0.3
+    thump = np.sin(TAU * 70 * t) * np.exp(-t * 18) * 0.7
+    return reverb(fade(slash + ring + thump), rng, 0.8, 0.25)
+
+
+def knell():
+    rng = np.random.default_rng(170)
+    d = 2.2
+    strike = hp(noise(0.03, rng), 900) * np.exp(-tt(0.03) * 90)
+    tone = bell(82.4, d, rng, decay=1.5,
+                partials=((0.5, 0.7), (1, 1), (1.19, 0.5), (2.0, 0.6), (2.51, 0.4), (3.0, 0.25), (4.1, 0.15)))
+    wave = bp(noise(0.6, rng), 100, 900) * np.exp(-tt(0.6) * 7) * 0.5
+    return reverb(fade(mix(d, (0, tone), (0, strike * 0.6), (0, wave)), 0.001, 0.4), rng, 2.4, 0.5)
+
+
+def rain_fall():
+    rng = np.random.default_rng(180)
+    d = 0.6
+    fall = tt(0.14)
+    whistle = np.sin(phase_of(np.interp(fall, [0, 0.14], [2600, 700]))) * np.linspace(0.2, 1, len(fall)) * 0.35
+    thud = np.sin(phase_of(np.interp(tt(0.4), [0, 0.4], [130, 45]))) * np.exp(-tt(0.4) * 12)
+    hiss = bp(noise(0.45, rng), 900, 5000) * np.exp(-tt(0.45) * 10) * 0.5
+    return reverb(fade(mix(d, (0, whistle), (0.12, thud), (0.12, hiss))), rng, 0.6, 0.25)
+
+
+def lance_form():
+    rng = np.random.default_rng(190)
+    d = 0.7
+    n = int(SR * d)
+    t = tt(d)
+    shimmer = sum(np.sin(TAU * f * t + rng.uniform(0, TAU)) * (1 + 0.3 * np.sin(TAU * rng.uniform(9, 17) * t))
+                  for f in (1568, 2093, 2349, 3136)) * 0.2
+    return reverb(fade(shimmer * swell(n, 0.8, 2) + bell(1568, d, rng, decay=6)[::-1] * 0.6, 0.02, 0.08), rng, 0.8, 0.35)
+
+
+def lance_fire():
+    rng = np.random.default_rng(200)
+    d = 0.5
+    t = tt(d)
+    zipped = np.sin(phase_of(np.interp(t, [0, 0.22, d], [2600, 420, 300]))) * np.exp(-t * 11)
+    air = bp(noise(d, rng), 1500, 8000) * np.exp(-t * 14)
+    thump = np.sin(TAU * 85 * t) * np.exp(-t * 20) * 0.6
+    return reverb(fade(zipped * 0.6 + air * 0.7 + thump, 0.001, 0.1), rng, 0.6, 0.25)
+
+
+def danse():
+    """A wound-down music box playing four bars of a waltz in A minor."""
+    rng = np.random.default_rng(210)
+    d = 4.2
+    n = int(SR * d)
+    beat = 0.32
+
+    def note(semitones):
+        return 440 * 2 ** (semitones / 12)
+
+    melody = [(0, 12), (1, 7), (2, 3), (3, 15), (4, 14), (5, 12), (6, 11), (7, 7), (8, 2), (9, 12), (10, 15), (11, 19),
+              (12, 24)]
+    bass = [(0, -12), (3, -17), (6, -17), (9, -12), (12, -24)]
+    box = ((1, 1), (2.0, 0.45), (3.01, 0.2), (5.2, 0.06))
+    layers = [(b * beat + 0.1, bell(note(s) * rng.uniform(0.996, 1.004), 1.4, rng, decay=4.5, partials=box) * 0.5)
+              for b, s in melody]
+    layers += [(b * beat + 0.1, bell(note(s), 1.6, rng, decay=3, partials=((1, 1), (2, 0.3))) * 0.6) for b, s in bass]
+    under = drone(d, rng, 55) * 0.12 * swell(n, 0.5, 1.2) + whisper(d, rng, 1700) * 0.2 * swell(n, 0.5, 1.2)
+    return reverb(fade(mix(d, *layers) + under, 0.01, 0.4), rng, 2.0, 0.45)
+
+
+def requiem_charge():
+    rng = np.random.default_rng(220)
+    d = 2.5                                                  # the Requiem lands 2.5 s after this starts
+    n = int(SR * d)
+    t = tt(d)
+    grow = np.linspace(0, 1, n)
+    glide = np.interp(t, [0, d], [0.84, 1.0])
+    voices = sum(choir(f * glide, d, rng) for f in (110, 164.8, 220, 261.6, 311.1))
+    tolls = mix(d, *[(at, bell(110, 0.9, rng, decay=3.5) * 0.5) for at in (0.0, 0.7, 1.25, 1.65, 1.95, 2.15, 2.3)])
+    riser = bp(noise(d, rng), 400, 6000) * grow ** 3
+    return fade(voices * 0.12 * grow ** 1.3 + tolls + riser * 0.5 + whisper(d, rng, 2200) * grow * 0.4, 0.05, 0.02)
+
+
+def requiem_release():
+    rng = np.random.default_rng(230)
+    d = 2.4
+    t = tt(d)
+    boom = np.sin(phase_of(np.interp(t, [0, 0.6, d], [70, 34, 28]))) * np.exp(-t * 2.2) * 1.5
+    crack = hp(noise(0.12, rng), 1200) * np.exp(-tt(0.12) * 35)
+    fall = choir(np.interp(t, [0, d], [330, 82]), d, rng) * np.exp(-t * 2.5) * 0.3
+    toll = bell(55, d, rng, decay=1.2) * 0.8
+    wash = bp(noise(d, rng), 150, 2500) * np.exp(-t * 3) * 0.6
+    return reverb(fade(mix(d, (0, boom), (0, crack), (0, fall), (0, toll), (0, wash)), 0.001, 0.4), rng, 2.8, 0.55)
+
+
+def reap():
+    """A life leaving: one short falling breath."""
+    rng = np.random.default_rng(240)
+    d = 0.8
+    n = int(SR * d)
+    t = tt(d)
+    breath = formant(noise(d, rng), ((900, 1.0), (1500, 0.6), (2800, 0.3)), 0.2) * swell(n, 0.2, 1.5)
+    tone = np.sin(phase_of(np.interp(t, [0, d], [620, 240]))) * swell(n, 0.15, 2) * 0.25
+    return reverb(fade(breath * 0.8 + tone, 0.01, 0.2), rng, 1.0, 0.4)
+
+
+def wither():
+    """Leaves and grass drying out all at once."""
+    rng = np.random.default_rng(250)
+    d = 1.0
+    n = int(SR * d)
+    out = np.zeros(n)
+    for _ in range(90):
+        i = int(rng.random() ** 1.6 * (n - 400))
+        click = hp(noise(0.006, rng), 1800) * np.exp(-tt(0.006) * 500)
+        out[i:i + len(click)] += click * rng.uniform(0.3, 1.0)
+    hiss = bp(noise(d, rng), 2500, 8000) * np.exp(-tt(d) * 4) * 0.25
+    return fade(bp(out, 1200, 9000) + hiss, 0.005, 0.2)
+
+
 SOUNDS = {
     'ambient1': lambda: ambient(1), 'ambient2': lambda: ambient(2), 'ambient3': lambda: ambient(3),
     'hurt1': lambda: hurt(1), 'hurt2': lambda: hurt(2), 'death': death, 'spawn': spawn, 'glide': glide,
     'sweep': sweep, 'eye_cast': eye_cast, 'eye_hit': eye_hit, 'gaze_charge': gaze_charge,
     'gaze_release': gaze_release, 'strings': strings, 'veil_step': veil_step, 'phase': phase,
+    'cast_sigil': cast_sigil, 'cast_blade': cast_blade, 'sigil_erupt1': lambda: sigil_erupt(1),
+    'sigil_erupt2': lambda: sigil_erupt(2), 'blade_wave': blade_wave, 'knell': knell, 'rain_fall': rain_fall,
+    'lance_form': lance_form, 'lance_fire': lance_fire, 'danse': danse, 'requiem_charge': requiem_charge,
+    'requiem_release': requiem_release, 'reap': reap, 'wither': wither,
 }
 
 

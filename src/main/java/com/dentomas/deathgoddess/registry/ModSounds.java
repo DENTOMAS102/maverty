@@ -23,6 +23,19 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> STRINGS = register("strings");
     public static final RegistryObject<SoundEvent> VEIL_STEP = register("veil_step");
     public static final RegistryObject<SoundEvent> PHASE = register("phase");
+    public static final RegistryObject<SoundEvent> CAST_SIGIL = register("cast_sigil");
+    public static final RegistryObject<SoundEvent> CAST_BLADE = register("cast_blade");
+    public static final RegistryObject<SoundEvent> SIGIL_ERUPT = register("sigil_erupt");
+    public static final RegistryObject<SoundEvent> BLADE_WAVE = register("blade_wave");
+    public static final RegistryObject<SoundEvent> KNELL = register("knell");
+    public static final RegistryObject<SoundEvent> RAIN_FALL = register("rain_fall");
+    public static final RegistryObject<SoundEvent> LANCE_FORM = register("lance_form");
+    public static final RegistryObject<SoundEvent> LANCE_FIRE = register("lance_fire");
+    public static final RegistryObject<SoundEvent> DANSE = register("danse");
+    public static final RegistryObject<SoundEvent> REQUIEM_CHARGE = register("requiem_charge");
+    public static final RegistryObject<SoundEvent> REQUIEM_RELEASE = register("requiem_release");
+    public static final RegistryObject<SoundEvent> REAP = register("reap");
+    public static final RegistryObject<SoundEvent> WITHER = register("wither");
 
     private static RegistryObject<SoundEvent> register(String name) {
         String path = "entity.goddess_of_death." + name;

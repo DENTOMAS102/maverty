@@ -59,6 +59,7 @@ class Box:
 PARTS = {}
 ORDER = []
 EYES = []   # (x, y, w, h) in halo space, used to paint smoke behind them
+REST = {}   # rest rotation of each right arm joint, exported so animations can pose arms absolutely
 
 
 def part(name, parent, pivot=(0, 0, 0), rot=(0, 0, 0)):
@@ -185,6 +186,8 @@ def build():
         'low': dict(sh=(-4.0, -3.8, 0.4), arm=(-4, 0, 30), fore=(-34, 0, -30), hand=(-18, 10, -14),
                     spread=8, curl=(-24, -44)),
     }
+    for pn, cfg in pairs.items():
+        REST[f'arm_{pn}'], REST[f'forearm_{pn}'], REST[f'hand_{pn}'] = cfg['arm'], cfg['fore'], cfg['hand']
     for sx, s in ((-1, 'r'), (1, 'l')):
         mir = sx > 0
 
@@ -760,6 +763,163 @@ EFFIGY = (
 )
 
 
+SIGIL = np.array([0.86, 0.09, 0.17])       # bright enough to read on grass in daylight
+
+
+def polar(n):
+    c = (n - 1) / 2
+    yy, xx = np.mgrid[0:n, 0:n]
+    dx, dy = (xx - c) / c, (yy - c) / c
+    return dx, dy, np.hypot(dx, dy), np.arctan2(dy, dx)
+
+
+def stain(img, mask, rng, base=0.3):
+    h, w = img.shape[:2]
+    n = fbm2(h, w, 6, 6, rng)
+    img[..., :3][mask] = NIGHT * 0.5
+    img[..., 3][mask] = (base + 0.22 * n)[mask]
+
+
+def ink(img, mask, col=SIGIL, shade=None):
+    img[..., :3][mask] = np.clip(col, 0, 1) if shade is None else np.clip(col[None, :] * shade[mask][:, None], 0, 1)
+    img[..., 3][mask] = 1
+
+
+def thick_line(img, x0, y0, x1, y1, col=SIGIL):
+    for ox, oy in ((0, 0), (1, 0), (0, 1)):
+        line(img, x0 + ox, y0 + oy, x1 + ox, y1 + oy, lambda i: np.clip(col, 0, 1))
+
+
+def sigil_disc(n, rng):
+    """The standard seal: runes between two rings, a seven-pointed star and an eye at the centre."""
+    img = blank(n, n)
+    dx, dy, r, th = polar(n)
+    c = (n - 1) / 2
+    stain(img, r < 0.96, rng)
+    turn = (th + math.pi) / (2 * math.pi)
+    runes = rng.random(40) < 0.62
+    ink(img, (r > 0.865) & (r < 0.925) & runes[(turn * 40).astype(int) % 40] & ((turn * 40) % 1 < 0.72), SIGIL * 0.8)
+    pts = [(c + 0.84 * c * math.cos(a), c + 0.84 * c * math.sin(a)) for a in np.arange(7) * 2 * math.pi / 7 - math.pi / 2]
+    for i in range(7):
+        thick_line(img, *pts[i], *pts[(i + 3) % 7], SIGIL * 0.85)
+    ink(img, (r > 0.93) & (r < 0.995))
+    ink(img, (r > 0.835) & (r < 0.86))
+    ink(img, (r > 0.36) & (r < 0.39))
+    lid = 0.17 * np.clip(1 - (dx / 0.31) ** 2, 0, 1) ** 0.7
+    stain(img, (np.abs(dy) < lid) & (np.abs(dx) < 0.31), rng, 0.75)
+    ink(img, (np.abs(np.abs(dy) - lid) < 0.022) & (np.abs(dx) < 0.31))
+    ink(img, r < 0.075, IVORY)
+    return img
+
+
+def sigil_mark(n, rng):
+    """Marked for Death: a single open eye that follows its victim."""
+    img = blank(n, n)
+    dx, dy, r, th = polar(n)
+    stain(img, r < 0.95, rng, 0.38)
+    turn = (th + math.pi) / (2 * math.pi)
+    ink(img, (r > 0.9) & (r < 0.99) & ((turn * 16) % 1 < 0.7))
+    lid = 0.5 * np.clip(1 - (dx / 0.86) ** 2, 0, 1) ** 0.75
+    ink(img, (np.abs(np.abs(dy) - lid) < 0.05) & (np.abs(dx) < 0.86))
+    ink(img, (r > 0.27) & (r < 0.35), SIGIL * 0.8)
+    ink(img, r < 0.15, IVORY)
+    for ang in (0, 90, 180, 270):
+        ca, sa = math.cos(math.radians(ang)), math.sin(math.radians(ang))
+        along, across = dx * ca + dy * sa, -dx * sa + dy * ca
+        ink(img, (along > 0.66) & (along < 0.9) & (np.abs(across) < 0.035))
+    return img
+
+
+def sigil_safe(n, rng):
+    """A refuge: pale, calm and unmistakably not hers."""
+    img = blank(n, n)
+    dx, dy, r, th = polar(n)
+    img[..., :3][r < 0.92] = IVORY
+    img[..., 3][r < 0.92] = 0.22 + 0.2 * (1 - r[r < 0.92])
+    turn = (th + math.pi) / (2 * math.pi)
+    ink(img, (r > 0.56) & (r < 0.84) & ((turn * 16) % 1 < 0.16), IVORY)
+    ink(img, (r > 0.9) & (r < 0.99), np.array([1.0, 0.97, 0.9]))
+    ink(img, (r > 0.48) & (r < 0.53), SILVER * 1.4)
+    ink(img, r < 0.1, np.array([1.0, 0.97, 0.9]))
+    return img
+
+
+def sigil_ring(w, h, rng):
+    """Tile for an annulus: u runs around it, v from the inner edge to the outer."""
+    img = blank(w, h)
+    yy, xx = np.mgrid[0:h, 0:w]
+    stain(img, np.ones((h, w), bool), rng)
+    ink(img, ((yy + np.abs((xx % 16) - 7.5) * 1.1) % 16 < 2) & (yy > 5) & (yy < h - 6), SIGIL * 0.7)
+    ink(img, (yy < 3) | (yy >= h - 3))
+    return img
+
+
+def sigil_line(n, rng):
+    """Tile for a strip: u across it, v along it, with chevrons pointing the way the blow travels."""
+    img = blank(n, n)
+    yy, xx = np.mgrid[0:n, 0:n]
+    stain(img, np.ones((n, n), bool), rng)
+    ink(img, ((yy + np.abs(xx - (n - 1) / 2) * 0.8) % 16 < 2.2) & (xx > 4) & (xx < n - 5), SIGIL * 0.7)
+    ink(img, (xx < 3) | (xx >= n - 3))
+    return img
+
+
+def death_pillar(w, h, rng):
+    """Rising wisps for the burst: opaque at the base, torn away toward the top. Tiles sideways."""
+    x = np.arange(w)[None, :]
+    y = np.linspace(0, 1, h)[:, None]
+    streak = np.zeros((h, w))
+    for k in range(1, 7):
+        streak += np.sin(2 * math.pi * k * x / w + rng.uniform(0, 6.28) + y * rng.uniform(-3, 3) * k) / k
+    streak = (streak - streak.min()) / (streak.max() - streak.min())
+    alpha = np.clip(streak * 1.7 - 0.35, 0, 1) * y ** 1.2
+    img = blank(w, h)
+    heat = np.clip(streak * 1.6 - 0.6, 0, 1)[..., None]
+    img[..., :3] = BLACK[None, None, :] * (1 - heat) + (SIGIL * 1.1)[None, None, :] * heat
+    img[..., 3] = np.clip(alpha * 1.3, 0, 1)
+    sparks = (rng.random((h, w)) < 0.012) & (alpha > 0.3)
+    img[sparks] = (*IVORY, 1)
+    return img
+
+
+def death_crescent(w, h, rng):
+    img = blank(w, h)
+    yy, xx = np.mgrid[0:h, 0:w]
+    outer = np.hypot(xx - (w - 1) / 2, yy - (h + 2)) / (w * 0.5)
+    inner = np.hypot(xx - (w - 1) / 2, yy - (h + 9)) / (w * 0.5)
+    blade = (outer < 1.36) & (inner > 1.42)
+    edge = np.clip((outer - 1.1) / 0.26, 0, 1)
+    img[..., :3] = BLACK[None, None, :] * (1 - edge[..., None]) + (SIGIL * 1.15)[None, None, :] * edge[..., None]
+    img[..., 3] = blade
+    img[blade & (outer > 1.3)] = (*IVORY, 1)
+    return img
+
+
+def death_orb(n, rng):
+    img = blank(n, n)
+    dx, dy, r, th = polar(n)
+    img[r < 1.0] = (*(SIGIL * 0.55), 0.55)
+    img[r < 0.82] = (*SIGIL, 1)
+    img[r < 0.6] = (*BLACK, 1)
+    img[np.hypot(dx + 0.2, dy + 0.22) < 0.16] = (*IVORY, 1)
+    return img
+
+
+def soul_lance(w, h, rng):
+    """A spectral spear, point at the right-hand end."""
+    img = blank(w, h)
+    yy, xx = np.mgrid[0:h, 0:w]
+    mid = (h - 1) / 2
+    t = xx / (w - 1)
+    half = np.where(t < 0.6, 0.6, 0.6 + 3.0 * np.sin(np.clip((t - 0.6) / 0.4, 0, 1) * math.pi) ** 0.8)
+    body = np.abs(yy - mid) <= half
+    img[..., :3] = np.where((t > 0.6)[..., None], IVORY[None, None, :], (SIGIL * 0.9)[None, None, :])
+    rim = body & (np.abs(yy - mid) > half - 1.0) & (t > 0.6)
+    img[..., :3][rim] = SIGIL
+    img[..., 3] = body * np.clip(t * 4, 0, 1)
+    return img
+
+
 def extras():
     """Small standalone textures: the thrown eye, the wrist threads and the item icons."""
     rng = rng_for('extras')
@@ -788,6 +948,18 @@ def extras():
             if ch != '.':
                 doll[y, x] = (*np.clip(colors[ch] * rng.uniform(0.88, 1.12), 0, 1), 1)
     save(doll, 'mourning_effigy.png', item_dir)
+
+    # Spell effects. Each painter gets its own seed so adding one never repaints the others.
+    spells = {
+        'sigil_disc.png': lambda r: sigil_disc(128, r), 'sigil_mark.png': lambda r: sigil_mark(64, r),
+        'sigil_safe.png': lambda r: sigil_safe(64, r), 'sigil_ring.png': lambda r: sigil_ring(64, 32, r),
+        'sigil_line.png': lambda r: sigil_line(32, r), 'death_pillar.png': lambda r: death_pillar(32, 64, r),
+        'death_crescent.png': lambda r: death_crescent(32, 24, r), 'death_orb.png': lambda r: death_orb(16, r),
+        'soul_lance.png': lambda r: soul_lance(32, 8, r),
+    }
+    for name, painter in spells.items():
+        save(painter(rng_for(name)), name)
+    save(np.ones((8, 8, 4)), 'sigil_fill.png')
 
 
 # ---------------------------------------------------------------- java
@@ -830,12 +1002,15 @@ def emit_part(p, lines, methods):
 
 def write_java():
     methods = []
+    rest_entries = ',\n'.join('            Map.entry("%s", new float[]{%s})' % (k, ', '.join(jf(v) for v in rot))
+                               for k, rot in REST.items())
     roots = [p for p in ORDER if p.parent is None]
     for r in roots:
         emit_part(r, None, methods)
     src = f'''// GENERATED by tools/gen_model.py -- edit the generator, not this file.
 package com.dentomas.deathgoddess.client.model;
 
+import java.util.Map;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -848,6 +1023,9 @@ public final class GoddessModelLayer {{
     /** Eye sizes in model pixels, used to keep each pupil inside its lids. */
     public static final float[] EYE_WIDTH = {{{', '.join(jf(e[2]) for e in EYES)}}};
     public static final float[] EYE_HEIGHT = {{{', '.join(jf(e[3]) for e in EYES)}}};
+    /** Rest rotation in degrees of each right arm joint; the left side mirrors y and z. */
+    public static final Map<String, float[]> REST_DEGREES = Map.ofEntries(
+{rest_entries});
 
     private GoddessModelLayer() {{
     }}
