@@ -1,0 +1,23 @@
+{
+  "entity.deathgoddess.goddess_of_death": "Goddess of Death",
+  "entity.deathgoddess.watching_eye": "Watching Eye",
+  "item.deathgoddess.goddess_of_death_spawn_egg": "Goddess of Death Spawn Egg",
+  "item.deathgoddess.mourning_effigy": "Mourning Effigy",
+  "item.deathgoddess.mourning_effigy.tooltip": "Set it down, and she will come.",
+  "item.deathgoddess.mourning_effigy.peaceful": "She does not answer in a peaceful world.",
+  "item.deathgoddess.mourning_effigy.no_room": "There is not enough room for her here.",
+  "item.deathgoddess.eye_of_oblivion": "Eye of Oblivion",
+  "subtitles.deathgoddess.goddess_of_death.ambient": "Goddess of Death whispers",
+  "subtitles.deathgoddess.goddess_of_death.hurt": "Porcelain cracks",
+  "subtitles.deathgoddess.goddess_of_death.death": "Goddess of Death comes apart",
+  "subtitles.deathgoddess.goddess_of_death.spawn": "A bell tolls",
+  "subtitles.deathgoddess.goddess_of_death.glide": "Fabric drags",
+  "subtitles.deathgoddess.goddess_of_death.sweep": "Six arms rake",
+  "subtitles.deathgoddess.goddess_of_death.eye_cast": "An eye tears free",
+  "subtitles.deathgoddess.goddess_of_death.eye_hit": "An eye bursts",
+  "subtitles.deathgoddess.goddess_of_death.gaze_charge": "The halo opens",
+  "subtitles.deathgoddess.goddess_of_death.gaze_release": "The halo sees you",
+  "subtitles.deathgoddess.goddess_of_death.strings": "Threads pull taut",
+  "subtitles.deathgoddess.goddess_of_death.veil_step": "Goddess of Death vanishes",
+  "subtitles.deathgoddess.goddess_of_death.phase": "Goddess of Death shrieks"
+}

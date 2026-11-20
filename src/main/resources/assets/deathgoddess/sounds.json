@@ -1,0 +1,98 @@
+{
+  "entity.goddess_of_death.ambient": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.ambient",
+    "sounds": [
+      "deathgoddess:goddess/ambient1",
+      "deathgoddess:goddess/ambient2",
+      "deathgoddess:goddess/ambient3"
+    ]
+  },
+  "entity.goddess_of_death.hurt": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.hurt",
+    "sounds": [
+      "deathgoddess:goddess/hurt1",
+      "deathgoddess:goddess/hurt2"
+    ]
+  },
+  "entity.goddess_of_death.death": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.death",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/death",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.spawn": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.spawn",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/spawn",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.glide": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.glide",
+    "sounds": [
+      "deathgoddess:goddess/glide"
+    ]
+  },
+  "entity.goddess_of_death.sweep": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.sweep",
+    "sounds": [
+      "deathgoddess:goddess/sweep"
+    ]
+  },
+  "entity.goddess_of_death.eye_cast": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.eye_cast",
+    "sounds": [
+      "deathgoddess:goddess/eye_cast"
+    ]
+  },
+  "entity.goddess_of_death.eye_hit": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.eye_hit",
+    "sounds": [
+      "deathgoddess:goddess/eye_hit"
+    ]
+  },
+  "entity.goddess_of_death.gaze_charge": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.gaze_charge",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/gaze_charge",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.gaze_release": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.gaze_release",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/gaze_release",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "entity.goddess_of_death.strings": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.strings",
+    "sounds": [
+      "deathgoddess:goddess/strings"
+    ]
+  },
+  "entity.goddess_of_death.veil_step": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.veil_step",
+    "sounds": [
+      "deathgoddess:goddess/veil_step"
+    ]
+  },
+  "entity.goddess_of_death.phase": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.phase",
+    "sounds": [
+      {
+        "name": "deathgoddess:goddess/phase",
+        "attenuation_distance": 48
+      }
+    ]
+  }
+}
