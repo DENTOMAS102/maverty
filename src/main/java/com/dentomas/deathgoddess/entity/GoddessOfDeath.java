@@ -1,5 +1,6 @@
 package com.dentomas.deathgoddess.entity;
 
+import com.dentomas.deathgoddess.GoddessConfig;
 import com.dentomas.deathgoddess.registry.ModSounds;
 import com.mojang.math.Vector3f;
 import java.nio.charset.StandardCharsets;
@@ -109,17 +110,36 @@ public class GoddessOfDeath extends Monster {
         for (int i = 0; i < this.actionAnims.length; i++) {
             this.actionAnims[i] = new AnimationState();
         }
-        this.xpReward = 150;
+        this.xpReward = 800;
         this.maxUpStep = 1.25F;
         this.setPersistenceRequired();
+        if (!level.isClientSide) {
+            this.applyConfig();
+        }
+    }
+
+    /** Her strength comes from the config, so a pack can retune her without a rebuild. */
+    private void applyConfig() {
+        this.setBase(Attributes.MAX_HEALTH, GoddessConfig.MAX_HEALTH.get());
+        this.setBase(Attributes.ARMOR, GoddessConfig.ARMOR.get());
+        this.setBase(Attributes.ARMOR_TOUGHNESS, GoddessConfig.ARMOR_TOUGHNESS.get());
+        this.setHealth(this.getMaxHealth());
+    }
+
+    private void setBase(net.minecraft.world.entity.ai.attributes.Attribute attribute, double value) {
+        AttributeInstance instance = this.getAttribute(attribute);
+        if (instance != null) {
+            instance.setBaseValue(value);
+        }
     }
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMonsterAttributes()
-                .add(Attributes.MAX_HEALTH, 400.0D)
+                .add(Attributes.MAX_HEALTH, 600.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.28D)
                 .add(Attributes.ATTACK_DAMAGE, 11.0D)
-                .add(Attributes.ARMOR, 6.0D)
+                .add(Attributes.ARMOR, 12.0D)
+                .add(Attributes.ARMOR_TOUGHNESS, 6.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 1.0D)
                 .add(Attributes.FOLLOW_RANGE, 48.0D);
     }
@@ -169,6 +189,11 @@ public class GoddessOfDeath extends Monster {
 
         GoddessAction action = this.getAction();
         LivingEntity target = this.getTarget();
+        if (target == null && this.tickCount % 20 == 0 && this.getHealth() < this.getMaxHealth()
+                && this.tickCount - this.getLastHurtByMobTimestamp() > 300) {
+            // Left alone, she mends: walking away does not wear her down.
+            this.heal(this.getMaxHealth() * 0.01F);
+        }
         if (action != GoddessAction.NONE) {
             this.actionTicks++;
             this.getNavigation().stop();
@@ -433,7 +458,8 @@ public class GoddessOfDeath extends Monster {
     }
 
     private float power(float damage) {
-        return this.isEnraged() ? damage * 1.2F : damage;
+        float scaled = damage * GoddessConfig.DAMAGE_MULTIPLIER.get().floatValue();
+        return this.isEnraged() ? scaled * 1.2F : scaled;
     }
 
     /** Where her magic is aimed: the target, or straight ahead when she has none (previews). */
@@ -465,7 +491,7 @@ public class GoddessOfDeath extends Monster {
 
     private void sweepHit(float scale) {
         Vec3 facing = direction(this.yBodyRot);
-        float damage = (float) this.getAttributeValue(Attributes.ATTACK_DAMAGE) * scale;
+        float damage = this.power((float) this.getAttributeValue(Attributes.ATTACK_DAMAGE)) * scale;
         AABB area = this.getBoundingBox().inflate(5.4D, 1.5D, 5.4D);
         for (LivingEntity victim : this.level.getEntitiesOfClass(LivingEntity.class, area, e -> e != this && e.isAlive())) {
             Vec3 to = victim.position().subtract(this.position());
@@ -488,7 +514,7 @@ public class GoddessOfDeath extends Monster {
         double flat = to.horizontalDistance();
         Vec3 dir = to.multiply(1.0D, 0.0D, 1.0D).normalize();
         double strength = Math.min(2.6D, 0.4D + flat * 0.12D);
-        if (DeathMagic.strike(this, this, target, 4.0F) && target.isAlive()) {
+        if (DeathMagic.strike(this, this, target, this.power(4.0F)) && target.isAlive()) {
             target.setDeltaMovement(dir.x * strength, 0.45D, dir.z * strength);
             target.hurtMarked = true;
         }
@@ -523,6 +549,7 @@ public class GoddessOfDeath extends Monster {
         double side = (this.random.nextDouble() - 0.5D) * 2.8D;
         Vec3 from = this.haloCenter().add(right.scale(side)).add(0.0D, this.random.nextDouble() * 1.3D - 0.2D, 0.0D);
         WatchingEye eye = new WatchingEye(this.level, this, target, this.isEnraged() ? 0.95F : 0.8F);
+        eye.damage = this.power(7.0F);
         eye.setPos(from.x, from.y, from.z);
         eye.setDeltaMovement(right.scale(side * 0.1D).add(0.0D, 0.12D, 0.0D));
         this.level.addFreshEntity(eye);
@@ -703,7 +730,7 @@ public class GoddessOfDeath extends Monster {
         for (LivingEntity victim : this.level.getEntitiesOfClass(LivingEntity.class, this.getBoundingBox().inflate(8.0D),
                 e -> e != this && e.isAlive())) {
             Vec3 away = victim.position().subtract(this.position());
-            if (DeathMagic.strike(this, this, victim, 6.0F) && victim.isAlive()) {
+            if (DeathMagic.strike(this, this, victim, this.power(6.0F)) && victim.isAlive()) {
                 victim.knockback(2.0D, -away.x, -away.z);
                 victim.hurtMarked = true;
             }
@@ -845,7 +872,18 @@ public class GoddessOfDeath extends Monster {
     }
 
     @Override
+    public boolean hurt(DamageSource source, float amount) {
+        float cap = GoddessConfig.DAMAGE_CAP.get().floatValue();
+        // No single blow, however enchanted, takes more than this from her.
+        return super.hurt(source, cap > 0.0F && !source.isBypassInvul() ? Math.min(amount, cap) : amount);
+    }
+
+    @Override
     public boolean isInvulnerableTo(DamageSource source) {
+        if (source == DamageSource.IN_WALL || source == DamageSource.DROWN || source == DamageSource.CRAMMING
+                || source == DamageSource.CACTUS || source == DamageSource.SWEET_BERRY_BUSH) {
+            return true;
+        }
         if (!source.isBypassInvul()) {
             GoddessAction action = this.getAction();
             boolean vanished = action == GoddessAction.VEIL_STEP && this.actionTicks >= 6 && this.actionTicks <= 20;

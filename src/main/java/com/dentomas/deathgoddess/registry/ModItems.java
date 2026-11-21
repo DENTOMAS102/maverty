@@ -2,6 +2,7 @@ package com.dentomas.deathgoddess.registry;
 
 import com.dentomas.deathgoddess.DeathGoddessMod;
 import com.dentomas.deathgoddess.item.MourningEffigyItem;
+import com.dentomas.deathgoddess.item.TomeItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -23,6 +24,9 @@ public final class ModItems {
 
     public static final RegistryObject<Item> EYE_OF_OBLIVION = ITEMS.register("eye_of_oblivion",
             () -> new Item(new Item.Properties().tab(CreativeModeTab.TAB_MISC).rarity(Rarity.EPIC).fireResistant()));
+
+    public static final RegistryObject<Item> TOME = ITEMS.register("tome",
+            () -> new TomeItem(new Item.Properties().tab(CreativeModeTab.TAB_MISC).stacksTo(1).rarity(Rarity.UNCOMMON)));
 
     private ModItems() {
     }

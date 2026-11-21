@@ -39,6 +39,7 @@ public class WatchingEye extends Projectile {
     private Entity target;
     private int life;
     private float speed = 0.7F;
+    public float damage = 7.0F;
 
     public WatchingEye(EntityType<? extends WatchingEye> type, Level level) {
         super(type, level);
@@ -119,7 +120,7 @@ public class WatchingEye extends Projectile {
             return;
         }
         LivingEntity owner = this.getOwner() instanceof LivingEntity living ? living : null;
-        if (result.getEntity() instanceof LivingEntity victim && DeathMagic.strike(owner, this, victim, 7.0F)
+        if (result.getEntity() instanceof LivingEntity victim && DeathMagic.strike(owner, this, victim, this.damage)
                 && victim.isAlive()) {
             victim.addEffect(new MobEffectInstance(MobEffects.WITHER, 80, 1), this.getEffectSource());
         }

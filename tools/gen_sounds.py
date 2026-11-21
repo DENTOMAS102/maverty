@@ -479,6 +479,31 @@ def wither():
     return fade(bp(out, 1200, 9000) + hiss, 0.005, 0.2)
 
 
+def watched():
+    """Being watched, as heard from inside: a heart speeding up, a held breath, a thin ringing."""
+    rng = np.random.default_rng(260)
+    d = 8.3                                                  # the eye stays open for about seven seconds
+    n = int(SR * d)
+    t = tt(d)
+    presence = np.interp(t, [0, 0.9, 6.9, d], [0, 1, 1, 0])
+    out = np.zeros(n)
+    at = 0.5
+    while at < d - 0.6:
+        rate = np.interp(at, [0, 3.5, 6.5, d], [62, 118, 104, 60])     # beats per minute
+        for offset, pitch, level in ((0.0, 52, 1.0), (0.14, 44, 0.7)):
+            beat = tt(0.22)
+            thump = np.sin(phase_of(np.interp(beat, [0, 0.22], [pitch * 1.6, pitch]))) * np.exp(-beat * 22) * level
+            i = int((at + offset) * SR)
+            thump = thump[:max(0, n - i)]
+            out[i:i + len(thump)] += thump
+        at += 60.0 / rate
+    hum = drone(d, rng, 41) * 0.25
+    ringing = (np.sin(TAU * 6270 * t) + 0.6 * np.sin(TAU * 6311 * t)) * 0.025
+    breath = whisper(d, rng, 1500) * 0.3
+    opening = mix(d, (0.0, bell(1760, 0.9, rng, decay=5)[::-1] * 0.18), (7.0, bell(1320, 1.2, rng, decay=4) * 0.14))
+    return reverb(fade((out * 0.9 + hum + ringing + breath) * presence + opening, 0.05, 0.5), rng, 1.8, 0.35)
+
+
 SOUNDS = {
     'ambient1': lambda: ambient(1), 'ambient2': lambda: ambient(2), 'ambient3': lambda: ambient(3),
     'hurt1': lambda: hurt(1), 'hurt2': lambda: hurt(2), 'death': death, 'spawn': spawn, 'glide': glide,
@@ -487,7 +512,7 @@ SOUNDS = {
     'cast_sigil': cast_sigil, 'cast_blade': cast_blade, 'sigil_erupt1': lambda: sigil_erupt(1),
     'sigil_erupt2': lambda: sigil_erupt(2), 'blade_wave': blade_wave, 'knell': knell, 'rain_fall': rain_fall,
     'lance_form': lance_form, 'lance_fire': lance_fire, 'danse': danse, 'requiem_charge': requiem_charge,
-    'requiem_release': requiem_release, 'reap': reap, 'wither': wither,
+    'requiem_release': requiem_release, 'reap': reap, 'wither': wither, 'watched': watched,
 }
 
 

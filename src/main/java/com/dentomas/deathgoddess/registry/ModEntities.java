@@ -4,6 +4,7 @@ import com.dentomas.deathgoddess.DeathGoddessMod;
 import com.dentomas.deathgoddess.entity.DeathBolt;
 import com.dentomas.deathgoddess.entity.DeathSigil;
 import com.dentomas.deathgoddess.entity.GoddessOfDeath;
+import com.dentomas.deathgoddess.entity.OmenEye;
 import com.dentomas.deathgoddess.entity.WatchingEye;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -47,6 +48,16 @@ public final class ModEntities {
 
     public static final RegistryObject<EntityType<DeathBolt>> SOUL_LANCE = ENTITIES.register("soul_lance",
             () -> bolt(0.45F, 0.45F, 1).build("soul_lance"));
+
+    public static final RegistryObject<EntityType<OmenEye>> OMEN_EYE = ENTITIES.register("omen_eye",
+            () -> EntityType.Builder.<OmenEye>of(OmenEye::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .fireImmune()
+                    .noSave()
+                    .noSummon()
+                    .clientTrackingRange(8)
+                    .updateInterval(1)
+                    .build("omen_eye"));
 
     private static EntityType.Builder<DeathBolt> bolt(float width, float height, int updateInterval) {
         return EntityType.Builder.<DeathBolt>of(DeathBolt::new, MobCategory.MISC)

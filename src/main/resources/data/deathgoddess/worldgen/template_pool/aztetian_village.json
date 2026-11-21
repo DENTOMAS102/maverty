@@ -1,0 +1,15 @@
+{
+  "name": "deathgoddess:aztetian_village",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "deathgoddess:aztetian_village",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:is_hill",
+    "#minecraft:is_mountain",
+    "#minecraft:is_badlands",
+    "#minecraft:is_taiga",
+    "minecraft:plains",
+    "minecraft:sunflower_plains",
+    "minecraft:swamp",
+    {
+      "id": "#forge:is_plains",
+      "required": false
+    },
+    {
+      "id": "#forge:is_swamp",
+      "required": false
+    }
+  ]
+}

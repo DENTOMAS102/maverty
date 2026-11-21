@@ -1,0 +1,15 @@
+{
+  "name": "deathgoddess:ruined_statue",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "element_type": "minecraft:single_pool_element",
+        "location": "deathgoddess:ruined_statue",
+        "projection": "rigid",
+        "processors": "minecraft:empty"
+      }
+    }
+  ]
+}

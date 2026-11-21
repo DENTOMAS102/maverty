@@ -5,11 +5,13 @@ import com.dentomas.deathgoddess.client.model.GoddessModelLayer;
 import com.dentomas.deathgoddess.client.render.DeathBoltRenderer;
 import com.dentomas.deathgoddess.client.render.DeathSigilRenderer;
 import com.dentomas.deathgoddess.client.render.GoddessRenderer;
+import com.dentomas.deathgoddess.client.render.OmenEyeRenderer;
 import com.dentomas.deathgoddess.client.render.WatchingEyeRenderer;
 import com.dentomas.deathgoddess.registry.ModEntities;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -31,6 +33,12 @@ public final class ClientSetup {
         event.registerEntityRenderer(ModEntities.DEATH_CRESCENT.get(), DeathBoltRenderer::new);
         event.registerEntityRenderer(ModEntities.DEATH_ORB.get(), DeathBoltRenderer::new);
         event.registerEntityRenderer(ModEntities.SOUL_LANCE.get(), DeathBoltRenderer::new);
+        event.registerEntityRenderer(ModEntities.OMEN_EYE.get(), OmenEyeRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("watched", WatchedEffects::renderOverlay);
     }
 
     private ClientSetup() {

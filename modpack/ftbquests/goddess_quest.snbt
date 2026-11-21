@@ -1,0 +1,30 @@
+		{
+			description: [
+				"&8&kxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				"&8&kxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+				""
+				"&7Запись вымарана. На полях, другой рукой, одно слово:"
+				"&4«Смотрит»."
+				""
+				"Маркировка от магов Ордена"
+				"( &4&k?????????&r )"
+			]
+			hide: false
+			hide_dependency_lines: true
+			icon: "deathgoddess:eye_of_oblivion"
+			id: "0DEA7460DDE55001"
+			shape: "hexagon"
+			size: 1.5d
+			subtitle: "&8&k?????????"
+			tasks: [{
+				entity: "deathgoddess:goddess_of_death"
+				icon: "deathgoddess:eye_of_oblivion"
+				id: "0DEA7460DDE55002"
+				title: "???"
+				type: "kill"
+				value: 1L
+			}]
+			title: "&4???"
+			x: 0.0d
+			y: -10.0d
+		}
