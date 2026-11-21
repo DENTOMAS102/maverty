@@ -1,0 +1,104 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:ender_dragon",
+    "minecraft:warden",
+    {
+      "id": "whisperwoods:hirschgeist",
+      "required": false
+    },
+    {
+      "id": "va:patron_of_animals",
+      "required": false
+    },
+    {
+      "id": "va:basilisk",
+      "required": false
+    },
+    {
+      "id": "va:nightmarish_observer",
+      "required": false
+    },
+    {
+      "id": "graveyard:lich",
+      "required": false
+    },
+    {
+      "id": "cataclysm:netherite_monstrosity",
+      "required": false
+    },
+    {
+      "id": "cataclysm:the_harbinger",
+      "required": false
+    },
+    {
+      "id": "cataclysm:the_leviathan",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ender_guardian",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ignis",
+      "required": false
+    },
+    {
+      "id": "cataclysm:ancient_remnant",
+      "required": false
+    },
+    {
+      "id": "iter_rpg:sorrowsealed",
+      "required": false
+    },
+    {
+      "id": "aquamirae:captain_cornelia",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:lich",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:void_blossom",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:gauntlet",
+      "required": false
+    },
+    {
+      "id": "bosses_of_mass_destruction:obsidilith",
+      "required": false
+    },
+    {
+      "id": "fungal_frenzy:etherfang",
+      "required": false
+    },
+    {
+      "id": "fungal_frenzy:shroomster",
+      "required": false
+    },
+    {
+      "id": "fungal_frenzy:crimson_mycophant",
+      "required": false
+    },
+    {
+      "id": "fungal_frenzy:cordyceps",
+      "required": false
+    },
+    {
+      "id": "irons_spellbooks:dead_king",
+      "required": false
+    },
+    {
+      "id": "eeeabsmobs:nameless_guardian",
+      "required": false
+    },
+    {
+      "id": "divine_eden:apostle_eden",
+      "required": false
+    },
+    "minecraft:wither"
+  ]
+}

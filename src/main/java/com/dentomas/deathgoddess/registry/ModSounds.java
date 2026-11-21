@@ -36,6 +36,7 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> REQUIEM_RELEASE = register("requiem_release");
     public static final RegistryObject<SoundEvent> REAP = register("reap");
     public static final RegistryObject<SoundEvent> WITHER = register("wither");
+    public static final RegistryObject<SoundEvent> WATCHED = register("watched");
 
     private static RegistryObject<SoundEvent> register(String name) {
         String path = "entity.goddess_of_death." + name;

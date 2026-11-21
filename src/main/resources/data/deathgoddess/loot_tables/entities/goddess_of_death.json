@@ -6,7 +6,8 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "deathgoddess:eye_of_oblivion"
+          "name": "deathgoddess:eye_of_oblivion",
+          "weight": 1
         }
       ]
     },
@@ -16,6 +17,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:chain",
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -35,6 +37,7 @@
         {
           "type": "minecraft:item",
           "name": "minecraft:wither_rose",
+          "weight": 1,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -43,6 +46,22 @@
                 "min": 2,
                 "max": 5
               }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "deathgoddess:tome",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{Tome:\"puppet_and_puppeteer\"}"
             }
           ]
         }

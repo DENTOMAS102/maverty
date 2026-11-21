@@ -197,5 +197,11 @@
     "sounds": [
       "deathgoddess:goddess/wither"
     ]
+  },
+  "entity.goddess_of_death.watched": {
+    "subtitle": "subtitles.deathgoddess.goddess_of_death.watched",
+    "sounds": [
+      "deathgoddess:goddess/watched"
+    ]
   }
 }

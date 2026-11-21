@@ -920,6 +920,26 @@ def soul_lance(w, h, rng):
     return img
 
 
+TOME = (
+    "................",
+    "..bbbbbbbbbbb...",
+    ".bBBBBBBBBBBBs..",
+    ".bBrBBBBBBBrBsp.",
+    ".bBBBBBBBBBBBsp.",
+    ".bBBBkkkkkBBBsp.",
+    ".bBBkkeEekkBBsp.",
+    ".bBBBkkkkkBBBsp.",
+    ".bBBBBBcBBBBBsp.",
+    ".bBBBBBcBBBBBsp.",
+    ".bBrBBBBBBBrBsp.",
+    ".bBBBBBBBBBBBsp.",
+    ".bbbbbbbbbbbbsp.",
+    "..ppppppppppppp.",
+    "................",
+    "................",
+)
+
+
 def extras():
     """Small standalone textures: the thrown eye, the wrist threads and the item icons."""
     rng = rng_for('extras')
@@ -948,6 +968,20 @@ def extras():
             if ch != '.':
                 doll[y, x] = (*np.clip(colors[ch] * rng.uniform(0.88, 1.12), 0, 1), 1)
     save(doll, 'mourning_effigy.png', item_dir)
+
+    book_colors = {'b': BURG * 0.6, 'B': BURG * 1.1, 's': SILVER * 0.6, 'p': IVORY * 0.85, 'k': BLACK * 1.5,
+                   'e': CRIM * 1.3, 'E': np.array([1.0, 0.3, 0.25]), 'r': SILVER * 0.9, 'c': SILVER * 0.5}
+    book_rng = rng_for('tome')
+    book = blank(16, 16)
+    for y, row in enumerate(TOME):
+        for x, ch in enumerate(row):
+            if ch != '.':
+                book[y, x] = (*np.clip(book_colors[ch] * book_rng.uniform(0.9, 1.1), 0, 1), 1)
+    save(book, 'tome.png', item_dir)
+
+    # The great eye that opens over a player: lids and pupil are separate so the pupil can move.
+    save(eye(64, 40, rng_for('omen_eye')), 'omen_eye.png')
+    save(pupil(16, 16, rng_for('omen_pupil')), 'omen_pupil.png')
 
     # Spell effects. Each painter gets its own seed so adding one never repaints the others.
     spells = {
