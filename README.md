@@ -3,6 +3,9 @@
 A boss mod for **Minecraft Forge 1.19.2** (Forge 43.x, Java 17). No other mods are required: the model and
 animations use the vanilla keyframe system, the same one the Warden uses.
 
+Everything a player sees is available in English and Russian and follows the game language.
+[Русская версия этого файла](README.ru.md).
+
 She is a veiled, six-armed marionette almost four blocks tall, hung from threads that fade into the dark above
 her, with a halo of independently moving eyes behind her head.
 
